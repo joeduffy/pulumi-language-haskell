@@ -1,0 +1,75 @@
+cabal-version:      2.4
+name:               pulumi
+version:            0.1.0.0
+
+-- A short (one-line) description of the package.
+-- synopsis:
+
+-- A longer description of the package.
+-- description:
+
+-- A URL where users can report bugs.
+-- bug-reports:
+
+-- The license under which the package is released.
+-- license:
+author:             Joe Duffy
+maintainer:         joe@pulumi.com
+
+-- A copyright notice.
+-- copyright:
+-- category:
+-- extra-source-files:
+
+library
+    exposed-modules:
+        Pulumi.Resource
+      , Pulumi.ResourceOptions
+      , Pulumi.Types
+      , Pulumi.Proto.Empty
+      , Pulumi.Proto.Language
+      , Pulumi.Proto.Plugin
+    other-modules:
+        Pulumi.Runtime
+    build-depends:
+        base >=4.8 && <4.16
+      , bytestring
+      , containers
+      , deepseq
+      , grpc-haskell
+      , proto3-suite
+      , proto3-wire
+      , text
+      , vector
+    hs-source-dirs:   lib
+    default-language: Haskell2010
+
+executable app
+    main-is:          Main.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:    Pulumi.Resource
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:
+        pulumi
+      , base
+      , containers
+    hs-source-dirs:e  app
+    default-language: Haskell2010
+
+executable pulumi-language-haskell
+    main-is:          Main.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:    Pulumi.Resource
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:
+        pulumi
+      , base
+      , grpc-haskell
+    hs-source-dirs:   srv
+    default-language: Haskell2010
