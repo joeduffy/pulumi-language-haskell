@@ -70,6 +70,9 @@ executable pulumi-language-haskell
     build-depends:
         pulumi
       , base
+      , directory
       , grpc-haskell
+      , process
+      , text
     hs-source-dirs:   srv
     default-language: Haskell2010
