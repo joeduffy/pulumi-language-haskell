@@ -21,15 +21,21 @@ fix_module_name() {
     done
 }
 
+if [[ -z "$PULUMI_PROTO_PATH" ]]; then
+    >&2 echo "error: please set PULUMI_PROTO_PATH to the sdk/proto directory in the Pulumi repo"
+    exit -1
+fi
+
 # Compile the Pulumi protos.
 echo "Compiling Pulumi protos..."
-for f in $(ls ../proto/*.proto); do
-    compile ../proto $(basename $f) ./lib/Pulumi/Proto/
+for f in $(ls ${PULUMI_PROTO_PATH}/*.proto); do
+    compile ${PULUMI_PROTO_PATH} $(basename $f) ./lib/Pulumi/Proto/
 done
 
 # HACK: Compile the Google protos -- we need to vendor these.
 echo "Compiling Google protos..."
-compile ../proto/google/protobuf empty.proto ./lib/Pulumi/Proto/
+compile ${PULUMI_PROTO_PATH}/google/protobuf empty.proto ./lib/Pulumi/Proto/
+compile ${PULUMI_PROTO_PATH}/google/protobuf struct.proto ./lib/Pulumi/Proto/
 sed -i.bak 's/Google\.Protobuf\./Pulumi\.Proto\./g' ./lib/Pulumi/Proto/*.hs
 
 # HACK: Fix up module names so they use qualified Pulumi.Proto names (and also not Google ones).
