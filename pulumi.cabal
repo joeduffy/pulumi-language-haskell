@@ -29,6 +29,7 @@ library
       , Pulumi.Proto.Empty
       , Pulumi.Proto.Language
       , Pulumi.Proto.Plugin
+      , Pulumi.Proto.Struct
     other-modules:
         Pulumi.Runtime
     build-depends:
