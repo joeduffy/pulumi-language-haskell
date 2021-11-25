@@ -52,11 +52,11 @@ runHandler (ServerNormalRequest _metadata (RunRequest project stack pwd program 
         (Just cabal, Just runhs)  -> do
             -- Stuff the arguments into an environment bag.
             currEnv <- getEnvironment
-            let env = currEnv ++ [ ("PULUMI_HASKELL_PROJECT"     , show project)
-                                 , ("PULUMI_HASKELL_STACK"       , show stack)
+            let env = currEnv ++ [ ("PULUMI_HASKELL_PROJECT"     , unpack project)
+                                 , ("PULUMI_HASKELL_STACK"       , unpack stack)
                                  , ("PULUMI_HASKELL_DRY_RUN"     , show dryRun)
                                  , ("PULUMI_HASKELL_PARALLEL"    , show parallel)
-                                 , ("PULUMI_HASKELL_MONITOR_ADDR", show monitor_address)
+                                 , ("PULUMI_HASKELL_MONITOR_ADDR", unpack monitor_address)
                                  ]
 
             -- Execute the program and let it speak directly to the engine.
