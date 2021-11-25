@@ -45,27 +45,23 @@ getRequiredPluginsHandler (ServerNormalRequest _metadata (GetRequiredPluginsRequ
 runHandler :: ServerRequest 'Normal RunRequest RunResponse
               -> IO (ServerResponse 'Normal RunResponse)
 runHandler (ServerNormalRequest _metadata (RunRequest project stack pwd program args config dryRun parallel monitor_address queryMode configSecretKeys)) = do
-    -- Find the "runhaskell" binary.
-    runBin <- findExecutable "runhaskell"
-    case runBin of
-        Nothing -> error "'runhaskell' missing from your PATH"
-        Just _  -> do
+    -- Find the "cabal" and "runhaskell" binaries.
+    cabalBin <- findExecutable "cabal"
+    runhsBin <- findExecutable "runhaskell"
+    case (cabalBin, runhsBin) of
+        (Just cabal, Just runhs)  -> do
             -- Stuff the arguments into an environment bag.
-            let env = Just([
-                              ("PULUMI_HASKELL_PROJECT"     , show project)
-                            , ("PULUMI_HASKELL_STACK"       , show stack)
-                            , ("PULUMI_HASKELL_DRY_RUN"     , show dryRun)
-                            , ("PULUMI_HASKELL_PARALLEL"    , show parallel)
-                            , ("PULUMI_HASKELL_MONITOR_ADDR", show monitor_address)
-                           ])
-
-            -- HACK: for now we need to direct runhaskell where to find the Pulumi
-            -- Haskell SDK modules (it's not distributed as a real library yet).
-            plib <- getEnv "PULUMI_HASKELL_PATH"
+            currEnv <- getEnvironment
+            let env = currEnv ++ [ ("PULUMI_HASKELL_PROJECT"     , show project)
+                                 , ("PULUMI_HASKELL_STACK"       , show stack)
+                                 , ("PULUMI_HASKELL_DRY_RUN"     , show dryRun)
+                                 , ("PULUMI_HASKELL_PARALLEL"    , show parallel)
+                                 , ("PULUMI_HASKELL_MONITOR_ADDR", show monitor_address)
+                                 ]
 
             -- Execute the program and let it speak directly to the engine.
-            (_, _, _, ph) <- createProcess (proc "runhaskell" ["-i" ++ plib, "Main.hs"]){
-                env = env,
+            (_, _, _, ph) <- createProcess (proc cabal ["exec", runhs, "--", "Main.hs"]){
+                env = Just(env),
                 std_out = Inherit,
                 std_err = Inherit
             }
@@ -80,6 +76,7 @@ runHandler (ServerNormalRequest _metadata (RunRequest project stack pwd program 
             -- Finally, return the response.
             let answer = RunResponse (pack errorMsg) False
             return (ServerNormalResponse answer [] StatusOk "")
+        _ -> error "'cabal' and/or 'runhaskell' binaries missing from your PATH"
 
 -- Configure the options for our gRPC server.
 options :: ServiceOptions
