@@ -4,22 +4,26 @@ import Pulumi.ResourceOptions
 import Pulumi.Types
 
 data Resource = Resource {
-    urn :: IO String,
-    rid :: IO String,
     t :: String,
     name :: String,
     inputs :: StringMap,
-    outputs :: IO StringMap,
+    state :: Output ResourceState,
     opts :: ResourceOptions
+}
+
+data ResourceState = ResourceState {
+    urn :: String,
+    uid :: String,
+    outputs :: StringMap
 }
 
 decl :: String -> String -> StringMap -> ResourceOptions -> Resource
 decl t name props opts = Resource {
-    urn = urn,
-    rid = rid,
     t = t,
     name = name,
     inputs = props,
-    outputs = outputs,
-    opts = opts
-} where (urn, rid, outputs) = Runtime.registerResource t name props opts
+    opts = opts,
+    state = do
+        (urn, uid, outputs) <- Runtime.registerResource t name props opts
+        return (ResourceState urn uid outputs)
+}

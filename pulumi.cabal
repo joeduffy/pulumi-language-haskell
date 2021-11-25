@@ -29,6 +29,8 @@ library
       , Pulumi.Proto.Empty
       , Pulumi.Proto.Language
       , Pulumi.Proto.Plugin
+      , Pulumi.Proto.Provider
+      , Pulumi.Proto.Resource
       , Pulumi.Proto.Struct
     other-modules:
         Pulumi.Runtime
@@ -40,24 +42,10 @@ library
       , grpc-haskell
       , proto3-suite
       , proto3-wire
+      , split
       , text
       , vector
     hs-source-dirs:   lib
-    default-language: Haskell2010
-
-executable app
-    main-is:          Main.hs
-
-    -- Modules included in this executable, other than Main.
-    -- other-modules:    Pulumi.Resource
-
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
-    build-depends:
-        pulumi
-      , base
-      , containers
-    hs-source-dirs:e  app
     default-language: Haskell2010
 
 executable pulumi-language-haskell
